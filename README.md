@@ -1,1 +1,1 @@
-Code for Advent of Code, 2019. Find challenges and participate here: https://adventofcode.com/
+Code for Advent of Code, 2019. Find challenges and participate here: https://adventofcode.com/. I'm doing it in Python since I'm trying to brush up on those skills, but the challenges are language-agnostic.
