@@ -1,3 +1,5 @@
+# Problem statement: determine the amount of fuel needed to get Santa's sleigh off the ground, using the rocket equation
+
 import math
 
 f = open('day1input.txt', "r")
