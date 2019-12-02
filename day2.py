@@ -19,14 +19,14 @@ while i < len(numbers):
 
 # Part 2: Find inputs that produce the output 19690720
 
-numbers = map(int, lines[0].split(','))
 
 for noun in range(100):
   for verb in range(100):
+    numbers = map(int, lines[0].split(','))
     numbers[1] = noun
     numbers[2] = verb
-    i = 0
 
+    i = 0
     while i < len(numbers):
       opcode = numbers[i]
       if opcode == 1:
@@ -36,9 +36,9 @@ for noun in range(100):
       else:
         break
       i = i + 4
-    print numbers[0]
     if numbers[0] == 19690720:
       print "Noun: ",noun
       print "Verb: ",verb
-
+      answer = 100*noun+verb
+      print "The answer is: ",answer
 f.close()
