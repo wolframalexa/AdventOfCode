@@ -1,6 +1,7 @@
 f = open('day2input.txt', "r")
 lines = f.readlines()
-numbers = map(int, lines[0].split(','))
+numbers_original = map(int, lines[0].split(','))
+numbers = numbers_original
 
 # Part 1: Figure out the code at 0
 
@@ -18,10 +19,10 @@ while i < len(numbers):
 
 # Part 2: Find inputs that produce the output 19690720
 
+numbers = map(int, lines[0].split(','))
 
 for noun in range(100):
   for verb in range(100):
-    numbers = [i for i in numbers]
     numbers[1] = noun
     numbers[2] = verb
     i = 0
@@ -33,12 +34,11 @@ for noun in range(100):
       elif opcode == 2:
         numbers[numbers[i+3]] = numbers[numbers[i+1]]*numbers[numbers[i+2]]
       else:
-#	assert opcode == 99
         break
       i = i + 4
+    print numbers[0]
     if numbers[0] == 19690720:
       print "Noun: ",noun
       print "Verb: ",verb
-
 
 f.close()
