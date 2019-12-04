@@ -1,85 +1,78 @@
+from collections import defaultdict
+
 f = open('day3input.txt', "r")
 lines = f.readlines()
 firstwire = map(str, lines[0].split(','))
 secondwire = map(str, lines[1].split(','))
 
-x1 = []
-y1 = []
-x2 = []
-y2 = []
-intersectionX = []
-intersectionY = []
 ManhattanDistances = []
+WireDistances = []
 
-def followCommand(xArray, yArray, instructions):
-  xpos = 0
-  ypos = 0
+# sets the path of the wires
+def followCommand(instructions):
+  xpos,ypos = 0,0
+  positions = set()
 
   for i in instructions:
-    direction = i[0]
-    length = int(i[1:])
-    if direction == "R":
-      xpos = xpos + length
-      xArray.append(xpos)
-      yArray.append(ypos)
-    elif direction == "L":
-      xpos = xpos - length
-      xArray.append(xpos)
-      yArray.append(ypos)
-    elif direction == "U":
-      ypos = ypos + length
-      yArray.append(ypos)
-      xArray.append(xpos)
-    elif direction == "D":
-      ypos = ypos - length
-      yArray.append(ypos)
-      xArray.append(xpos)
+    for j in range(int(i[1:])):
+      direction = i[0]
+      if direction == "R":
+        xpos = xpos + 1
+      elif direction == "L":
+        xpos = xpos - 1
+      elif direction == "U":
+        ypos = ypos + 1
+      elif direction == "D":
+        ypos = ypos - 1
+      positions.add((xpos,ypos))
+  return positions
 
-def findLower(x1,x2):
-  if x1 < x2:
-    return x1
-  else:
-    return x2
+# find Manhattan distance between an intersection and the origin
+def findManhattanDistance(position):
+    x = abs(position[0])+abs(position[1])
+    if x != 0:
+      ManhattanDistances.append(x)
 
-def findHigher(x1,x2):
-  if x1 > x2:
-    return x1
-  else:
-    return x2
+# Find distance it takes to get to an intersection
+def crossingDistance(instructions, crossings):
+  distance = 0
+  xpos,ypos = 0,0
+  crossingDistances = defaultdict(int)
 
-def findIntersections(xArray1,yArray1,xArray2,yArray2):
-  loop = len(xArray1)-1
-  for i in range(0,loop): # all arrays should be of same size
-    # assuming no lines are superposed, only vertical lines can cross horizontal lines
-    for j in range(0,loop):
-      x1_lower = findLower(xArray1[i],xArray1[i+1])
-      y1_lower = findLower(yArray1[i],yArray1[i+1])
-      x1_higher = findHigher(xArray1[i],xArray1[i+1])
-      y1_higher = findHigher(yArray1[i],yArray1[i+1])
-
-      if xArray1[i] == xArray1[i+1] and yArray2[j] == yArray2[j+1] and y1_lower < yArray2[j] and yArray2[j] < y1_higher and x1_lower < xArray2[j] and xArray2[j] < x1_higher:
-        print "if statement"
-        intersectionX.append(xArray1[i])
-        intersectionY.append(yArray2[j])
-      elif yArray1[i] == yArray1[i+1] and xArray2[j] == xArray2[j+1] and x1_lower < xArray2[j] and xArray2[j] < x1_higher and y1_lower < yArray2[j] and yArray2[j] < y1_higher:
-	print "elif statement"
-        intersectionX.append(xArray2[j])
-        intersectionY.append(yArray1[i])
-# lines are vertical and horizontal: so they intersect when the x of the vertical line is in between the x of the points of the horizontal line. the opposite must also be true
+  for i in instructions:
+    for j in range(int(i[1:])):
+      direction = i[0]
+      if direction == "R":
+        xpos = xpos + 1
+      elif direction == "L":
+        xpos = xpos - 1
+      elif direction == "U":
+        ypos = ypos + 1
+      elif direction == "D":
+        ypos = ypos - 1
+      distance = distance + 1
+      if (xpos,ypos) in crossings:
+        crossingDistances[(xpos,ypos)] = distance
+  return crossingDistances
 
 
-def findManhattanDistance(xArray,yArray):
-  for i in range(0,len(xArray)):
-    x = abs(xArray[i])+abs(yArray[i])
-    ManhattanDistances.append(x)
+# Part 1
+wire1 = followCommand(firstwire)
+wire2 = followCommand(secondwire)
 
-followCommand(x1,y1,firstwire)
-followCommand(x2,y2,secondwire)
+crossings = wire1.intersection(wire2) # cool property of sets!
 
-findIntersections(x1,y1,x2,y2)
-print intersectionX
-print intersectionY
-findManhattanDistance(intersectionX,intersectionY)
-# minDistance = min(ManhattanDistances)
+for pos in crossings:
+  findManhattanDistance(pos)
+minDistance = min(ManhattanDistances)
+print "The minimal distance in part 1 is: ",minDistance
 
-# print "The minimal distance is: ",minDistance
+
+# Part 2
+wire1distances = crossingDistance(firstwire,crossings)
+wire2distances = crossingDistance(secondwire,crossings)
+
+for i in crossings:
+  WireDistances.append(wire1distances[i]+wire2distances[i])
+minWireDistance = min(WireDistances)
+print "The minimal distance for part 2 is: ",minWireDistance
