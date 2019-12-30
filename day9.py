@@ -21,20 +21,20 @@ def getValues(input, pos, opcode, mode1, mode2, mode3, booster):
   values = []
   offset = 0
 
-  if opcode in ["01", "02", "04", "05", "06", "07", "08"]:
+  if opcode in ["01", "02", "04", "05", "06", "07", "08", "09"]:
     if mode3 == "0":
       values.append(input[input[pos+1]])
     elif mode3 == "1":
       values.append(input[pos+1])
-    else:
-      values.append(input[pos+1]+ booster.relbase)
+    elif mode3 == "2":
+      values.append(input[input[pos+1]+ booster.relbase])
 
     if opcode in ["01", "02", "05", "06", "07", "08"]:
       if mode2 == "0":
         values.append(input[input[pos+2]])
       elif mode2 == "1":
         values.append(input[pos+2])
-      else:
+      elif mode2 == "2":
         values.append(input[input[pos+2]+ booster.relbase])
 
       if opcode in []:
@@ -58,13 +58,11 @@ def getValues(input, pos, opcode, mode1, mode2, mode3, booster):
 def IntcodeComputer(input, booster):
   while booster.numbers[booster.i] != 99:
     instruction = f"{booster.numbers[booster.i]:05}"
-    print(instruction)
     opcode = instruction[3:]
     mode1 = instruction[0]
     mode2 = instruction[1]
     mode3 = instruction[2]
     values, offset = getValues(booster.numbers, booster.i, opcode, mode1, mode2, mode3, booster)
-    print(values, offset)
 
     if opcode == "01":
       booster.numbers[booster.numbers[booster.i+3] + offset] = values[0] + values[1]
@@ -111,7 +109,6 @@ def IntcodeComputer(input, booster):
     elif opcode == "09":
       if len(values) != 0:
         booster.relbase += values[0]
-        print("Relative base: ", booster.relbase)
       booster.i += 2
 
   return booster
@@ -120,7 +117,13 @@ def IntcodeComputer(input, booster):
 # Part 1
 numbers = createProgram(numbers)
 booster = Booster(numbers)
-result = IntcodeComputer(1, booster)
-print(booster.output)
+IntcodeComputer(1, booster)
+print("The booster output for part 1 is: ", booster.output)
+
+
+# Part 2
+booster = Booster(numbers)
+IntcodeComputer(2, booster)
+print("The distress signal is: ", booster.output)
 
 f.close()
