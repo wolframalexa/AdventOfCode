@@ -37,6 +37,7 @@ def IntcodeComputer(numbers, input, j, halt):
     mode3 = instruction[2]
     values = getValues(numbers, i, opcode, mode1, mode2, mode3)
 
+    print(opcode)
     if opcode == "01":
       numbers[numbers[i+3]] = values[0] + values[1]
       i = i + 4
@@ -97,20 +98,4 @@ for list in permutations(range(5), 5):
   maximum = max(maximum, output)
 
 print("The largest possible thrust (part 1) is: ", maximum)
-
-# Part 2
-maximum = 0
-
-for list in permutations(range(5,10), 5):
-  output = 0
-  halt = False
-
-  while halt == False:
-    for i in list:
-      output = IntcodeComputer(numbers, output, i, halt)
-
-    print("infinite loop!")
-  maximum = max(maximum, output)
-print("The largest possible thrust (part 2) is: ", maximum)
-
 f.close()
