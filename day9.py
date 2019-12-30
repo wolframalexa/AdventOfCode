@@ -1,101 +1,126 @@
-from itertools import permutations
+from collections import defaultdict
 
-f = open('day7input.txt', "r")
+f = open('day9input.txt', "r")
 lines = f.readlines()
 numbers = list(map(int, lines[0].split(',')))
 
-def getValues(input, pos, opcode, mode1, mode2, mode3):
+class Booster:
+  def __init__(self, numbers):
+    self.numbers = numbers
+    self.i = 0
+    self.output = 0
+    self.relbase = 0
+
+def createProgram(input):
+  numbers = defaultdict(int)
+  for i in range(len(input)):
+    numbers[i] = int(input[i])
+  return numbers
+
+def getValues(input, pos, opcode, mode1, mode2, mode3, booster):
   values = []
+  offset = 0
+
   if opcode in ["01", "02", "04", "05", "06", "07", "08"]:
     if mode3 == "0":
       values.append(input[input[pos+1]])
-    else:
+    elif mode3 == "1":
       values.append(input[pos+1])
+    else:
+      values.append(input[pos+1]+ booster.relbase)
 
     if opcode in ["01", "02", "05", "06", "07", "08"]:
       if mode2 == "0":
         values.append(input[input[pos+2]])
-      else:
+      elif mode2 == "1":
         values.append(input[pos+2])
+      else:
+        values.append(input[input[pos+2]+ booster.relbase])
 
       if opcode in []:
         if mode1 == "0":
           values.append(input[input[pos+3]]) # parameters that an instruction writes to are never in immediate mode
-        else:
+        elif mode1 == "1":
           values.append(input[pos+3])
-  return values
+        else:
+          values.append(input[input[pos+2]+ booster.relbase])
 
-def IntcodeComputer(numbers, input, j, halt):
-  i = 0
-  inputs = 0
+  if opcode in ["01", "02", "07", "08"]:
+    if mode1 == "2":
+      offset = booster.relbase
 
-  while numbers[i] != 99:
-    instruction = f"{numbers[i]:05}"
+  if opcode in ["03"]:
+    if mode3 == "2":
+      offset = booster.relbase
+
+  return values, offset
+
+def IntcodeComputer(input, booster):
+  while booster.numbers[booster.i] != 99:
+    instruction = f"{booster.numbers[booster.i]:05}"
+    print(instruction)
     opcode = instruction[3:]
     mode1 = instruction[0]
     mode2 = instruction[1]
     mode3 = instruction[2]
-    values = getValues(numbers, i, opcode, mode1, mode2, mode3)
+    values, offset = getValues(booster.numbers, booster.i, opcode, mode1, mode2, mode3, booster)
+    print(values, offset)
 
-    print(opcode)
     if opcode == "01":
-      numbers[numbers[i+3]] = values[0] + values[1]
-      i = i + 4
+      booster.numbers[booster.numbers[booster.i+3] + offset] = values[0] + values[1]
+      booster.i += 4
 
     elif opcode == "02":
-      numbers[numbers[i+3]] = values[0] * values[1]
-      i = i + 4
+      booster.numbers[booster.numbers[booster.i+3] + offset] = values[0] * values[1]
+      booster.i += 4
 
     elif opcode == "03":
-      if not inputs:
-        numbers[numbers[i+1]] = j
-      else:
-        numbers[numbers[i+1]] = input
-      i = i + 2
-      inputs = inputs + 1
+      booster.numbers[booster.numbers[booster.i+1] + offset] = input
+      booster.i += 2
 
     elif opcode == "04":
-      output = values[0]
-      i = i + 2
+      booster.output = values[0]
+      booster.i += 2
 
     elif opcode == "05":
       if values[0]:
-        i = values[1]
+        booster.i = values[1]
       else:
-        i = i + 3
+        booster.i += 3
 
     elif opcode == "06":
       if not values[0]:
-        i = values[1]
+        booster.i = values[1]
       else:
-        i = i + 3
+        booster.i += 3
 
     elif opcode == "07":
       if values[0] < values[1]:
-        numbers[numbers[i+3]] = 1
+        booster.numbers[booster.numbers[booster.i+3] + offset] = 1
       else:
-        numbers[numbers[i+3]] = 0
-      i = i + 4
+        booster.numbers[booster.numbers[booster.i+3] + offset] = 0
+      booster.i += 4
 
     elif opcode == "08":
       if values[0] == values[1]:
-        numbers[numbers[i+3]] = 1
+        booster.numbers[booster.numbers[booster.i+3] + offset] = 1
       else:
-        numbers[numbers[i+3]] = 0
-      i = i + 4
+        booster.numbers[booster.numbers[booster.i+3] + offset] = 0
+      booster.i += 4
 
-  halt = True
-  return output
+    elif opcode == "09":
+      if len(values) != 0:
+        booster.relbase += values[0]
+        print("Relative base: ", booster.relbase)
+      booster.i += 2
+
+  return booster
+
 
 # Part 1
-maximum = 0
-halt = False
-for list in permutations(range(5), 5):
-  output = 0
+numbers = createProgram(numbers)
+booster = Booster(numbers)
+result = IntcodeComputer(1, booster)
+print(booster.output)
 
-  for i in list:
-    output = IntcodeComputer(numbers, output, i, halt)
-  maximum = max(maximum, output)
-
-print("The largest possible thrust (part 1) is: ", maximum)
 f.close()
