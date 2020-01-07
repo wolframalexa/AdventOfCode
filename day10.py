@@ -1,3 +1,5 @@
+from math import atan, degrees
+from collections import defaultdict
 
 # Get locations of all asteroids
 def readFile(file):
@@ -39,9 +41,50 @@ def getDirections(station, asteroids):
   return directions
 
 
+def angle(vector):
+  if vector[1] == 0:
+    return 90
+  angle = degrees(atan(vector[0]/vector[1]))
+  return angle
+
+
+def findQuadrants(asteroids):
+  quadrants = []
+  quadrants.append([x for x in directions if x[0] >= 0 and x[1] < 0])
+  quadrants.append([x for x in directions if x[0] > 0  and x[1] >= 0])
+  quadrants.append([x for x in directions if x[0] <= 0 and x[1] > 0])
+  quadrants.append([x for x in directions if x[0] < 0  and x[1] <= 0])
+  return quadrants
+
+def vaporize(quadrants, station, asteroids):
+  vaporized = 0
+
+  while True:
+    for quadrant in quadrants:
+      for direction in quadrant:
+        m = 1
+        while True:
+          coord = (station[0] + direction[0]*m, station[1] + direction[1]*m)
+          if coord[0] < 0 or coord[0] > 21 or coord[1] < 0 or coord[1] > 21:
+            break
+
+          if coord in asteroids:
+            asteroids.remove(coord)
+            vaporized += 1
+            print(vaporized)
+
+            if vaporized == 201: # off by one errors are fun!
+              print(coord[0]*100 + coord[1])
+              return coord[0]*100 + coord[1]
+            break
+          m += 1
+
 # Part 1
 asteroids = readFile("day10input.txt")
 lens = []
+
+f = open("day10input.txt", 'r')
+lines = f.readlines()
 
 for station in asteroids:
   directions = getDirections(station, asteroids)
@@ -50,5 +93,12 @@ maximum = max(lens)
 
 print("The most asteroids that can be observed are: ", maximum)
 
-# Part 2
-best = asteroids.index(maximum)
+# Part 2: inspired by @dementophobia's solution
+best = asteroids[lens.index(maximum)]
+directions = list(getDirections(best, asteroids))
+directions.sort(key = lambda direction:angle(direction), reverse = True)
+
+quadrants = findQuadrants(directions)
+
+final = vaporize(quadrants, best, asteroids)
+print("Final result for part 2: ", final)
