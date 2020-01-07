@@ -71,10 +71,8 @@ def vaporize(quadrants, station, asteroids):
           if coord in asteroids:
             asteroids.remove(coord)
             vaporized += 1
-            print(vaporized)
 
             if vaporized == 201: # off by one errors are fun!
-              print(coord[0]*100 + coord[1])
               return coord[0]*100 + coord[1]
             break
           m += 1
