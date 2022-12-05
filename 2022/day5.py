@@ -20,12 +20,9 @@ for instr in lines[10:]:
 
 for instr in lines[10:]:
 	instr = [int(s) for s in instr.split() if s.isdigit()]
-	print(instr)
 	crates = stacks2[instr[1]][:instr[0]] # get first n crates
-	print(crates)
 	stacks2[instr[1]] = stacks2[instr[1]][instr[0]:] # remove those crates from the list
 	stacks2[instr[2]] = crates + stacks2[instr[2]]
-
 
 print("After part 1:", stacks)
 print("After part 2:", stacks2)
