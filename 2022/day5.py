@@ -28,5 +28,4 @@ for instr in lines[10:]:
 	stacks2[instr[2]] = crates + stacks2[instr[2]]
 	print(stacks2)
 
-
 print("After part 2:", stacks2)
