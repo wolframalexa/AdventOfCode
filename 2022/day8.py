@@ -1,5 +1,17 @@
 import numpy as np
 
+def findVisible(trees):
+	visible = np.zeros_like(trees)
+	for i in range(len(trees)):
+	highest = trees[i][0]
+	visible[:][i,0] = 1
+
+	for j in range(len(trees2[i])):
+		if trees2[i][j] > highest:
+			visible[:][i,j] = 1
+			highest = trees2[i][j]
+	return(visible)
+
 f = open("day8input.txt", "r")
 
 trees = f.readlines()
