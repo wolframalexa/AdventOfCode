@@ -69,7 +69,5 @@ top_vis = findVisible(np.rot90(trees2))
 
 bottom_vis = findVisible(np.fliplr(np.rot90(trees2)))
 # from the bottom
-print(np.rot90(np.fliplr(top_vis)))
 vis = left_vis + np.fliplr(right_vis) + np.fliplr(np.rot90(bottom_vis)) + np.fliplr(np.rot90(np.fliplr(top_vis)))
-print(vis)
 print("Part 1:", np.count_nonzero(vis))
