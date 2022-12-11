@@ -30,7 +30,6 @@ def updateTail(dir, x1, y1, x2, y2):
 				y2 += 1
 			elif y2 > y1:
 				y2 -= 1
-
 		else:
 			y2 = y1
 			if x1 > x2:
@@ -39,14 +38,16 @@ def updateTail(dir, x1, y1, x2, y2):
 				x2 -= 1
 
 	elif isDirectMove(x1,y1,x2,y2):
-		if dir == "R":
-			y2 += 1
-		if dir == "L":
-			y2 -= 1
-		if dir == "U":
-			x2 += 1
-		if dir == "D":
-			x2 -= 1
+		if x1 == x2: # if the same in x
+			if y1 > y2:
+				y2 += 1
+			elif y2 > y1:
+				y2 -= 1
+		elif y1 == y2: # if the same in y
+			if x1 > x2:
+				x2 += 1
+			elif x2 > x1:
+				x2 -= 1
 	return (x2,y2)
 
 
