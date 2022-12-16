@@ -5,37 +5,62 @@ def intToList(x):
         return x
 
 def compare(a, b):
-    print("Comparing:", a, "vs", b)
-    # returns true if items are in the right order
+    # returns 1 if items are in the right order
     if isinstance(a, int) and isinstance(b, int):
-        print("both ints")
         if a < b:
-            print('smaller!')
-            return True
+            return 1
+        elif a == b:
+            return 0
         else:
-            return False
+            return -1
     elif isinstance(a, list) and isinstance(b, list):
-        print('both lists')
+        if a == [] and b == []:
+            return 0
+        elif a == []:
+            return 1
+        elif b == []:
+            return -1
+            
         c = compare(a[0], b[0])
-        if c == False and len(a) > 1:
+        if c == 0 and (len(a) > 1 or len(b) > 1):
             return compare(a[1:], b[1:])
+        elif c == 1:
+            return 1
         return c
-        # if len(a) < len(b):
-        #     return True
     else: # exactly one is an integer, exactly one is a list
-        print("mixed")
-        compare(intToList(a), intToList(b))
+        return compare(intToList(a), intToList(b))
 
-f = open("day13test.txt")
+def bubbleSort(a):
+    n = len(a)
+    for i in range(n):
+        for j in range(0, n - i - 1):
+            if compare(a[j], a[j+1]) == -1:
+                a[j], a[j+1] = a[j+1], a[j]
+    # return a
+
+f = open("day13input.txt")
 pairs = [[eval(s) for s in pair.split('\n')] for pair in f.read().split("\n\n")]
 
 i = 1
 sum = 0
-for pair in pairs[1:2]:
-    print(pair)
-    print(compare(pair[0], pair[1]))
-    if compare(pair[0], pair[1]):
+for pair in pairs:
+    if compare(pair[0], pair[1]) == 1:
         sum += i
-        print("new correct pair, index", i, sum)
     i += 1
-print("pairs in correct order:", sum)
+print("part 1:", sum)
+
+# part 2: bubble sort go brrrr
+f = open("day13input.txt")
+pairs = f.readlines()
+
+arr = []
+for pair in pairs:
+    if pair != "\n":
+        arr.append(eval(pair.strip("\n")))
+arr.append([[2]])
+arr.append([[6]])
+
+bubbleSort(arr)
+
+key = (arr.index([[2]]) + 1) * (arr.index([[6]]) + 1)
+print("Part 2:", key)
